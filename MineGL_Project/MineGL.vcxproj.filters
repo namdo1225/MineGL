@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header">
+      <UniqueIdentifier>{10d2c0ec-cf78-49ee-902a-813d65d06b08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{f22c9d2c-b25b-4854-9a8f-e716f7f6c8b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{58d1d996-98f4-4749-82be-ed5f7b18c6bc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="camera.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="characters.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="controller.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="debugging.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="drawable.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="include.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resourceManager.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="text.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="chunk.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="frustrum.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="chunkMap.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="greedyChunk.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="texture.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="text.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="resourceManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="drawable.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="debugging.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="controller.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="chunk.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="chunkMap.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="greedyChunk.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="shader\1.0_basic_lighting_fs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\1.0_basic_lighting_vs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\1.1_cube_fs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\1.1_cube_vs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\1.2_text_fs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\1.2_text_vs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\1_model_loading_fs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\1_model_Loading_vs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\2.2_basic_lighting_fs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\2.2_basic_lighting_vs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\2.2_light_cube_fs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\2.2_light_cube_vs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\2.3_basic_lighting_fs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\fragmentLightning.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\fragmentSource.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\vertexLightning.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\vertexSource.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\2.4_instancing_vec3_vs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\2.5_instancing_mat4_vs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\2.4_instancing_vec3_fs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\2.5_instancing_mat4_fs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

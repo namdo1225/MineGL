@@ -1,0 +1,55 @@
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aVerNormals;
+layout (location = 2) in vec2 aTexCoords;
+layout (location = 3) in mat4 aInstanceMatrix;
+
+out vec2 TexCoords;
+
+uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 model;
+
+void main()
+{
+
+    float xT = aInstanceMatrix[3][0];
+    float yT = aInstanceMatrix[3][1];
+    float zT = aInstanceMatrix[3][2];
+
+    float xR = aPos.x / 0.6;
+    float yR = aPos.y / 0.6;
+
+    float xA = xR + xT;
+    float yA = yR + yT;
+    
+    float texX = 1.0f; float texY = 1.0f;
+    float scale1; float scale2;
+
+    if (aVerNormals.x != 0.0f) {
+        scale1 = aInstanceMatrix[2][2];
+        scale2 = aInstanceMatrix[1][1];
+    } else if (aVerNormals.y != 0.0f) {
+        scale1 = aInstanceMatrix[0][0];
+        scale2 = aInstanceMatrix[2][2];
+    } else if (aVerNormals.z != 0.0f) {
+        scale1 = aInstanceMatrix[0][0];
+        scale2 = aInstanceMatrix[1][1];
+    }
+
+    if (scale1 != 1)
+        if (aTexCoords.x != 0)
+            texX = texX * scale1;
+
+    if (scale2 != 1)
+        if (aTexCoords.y != 0)
+            texY = texY * scale2;
+
+    if (aTexCoords.x == 0.0f)
+        texX = 0.0f;
+    if (aTexCoords.y == 0.0f)
+        texY = 0.0f;
+    TexCoords = vec2(texX, texY);
+
+    gl_Position = projection * view * aInstanceMatrix * vec4(aPos, 1.0f); 
+}
