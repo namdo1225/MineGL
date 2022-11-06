@@ -215,7 +215,7 @@ void GreedyChunk::greedyAlgorithm() {
             glm::mat4 model = glm::mat4(1.0f);
             glm::vec3 translate = glm::vec3(1.0f);
             bool first = true;
-            int scaleFactor = 1;
+            int scaleFactor = 1; 
 
             for (unsigned int i{ 0 }; i < sizeZ; i++) { //z
                 if (block[i][j][k] == GRASS) {
