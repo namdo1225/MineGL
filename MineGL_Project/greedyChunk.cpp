@@ -210,7 +210,10 @@ void GreedyChunk::prepareRegenerationEdge(Block*** block0, Block*** block1, Bloc
 
 void GreedyChunk::greedyAlgorithm() {
     faces[11].clear();
+    std::vector<CoorPack> coords;
     for (unsigned int k{ 0 }; k < sizeY; k++) { //y
+        coords.clear();
+
         for (unsigned int j{ 0 }; j < sizeX; j++) { //x
             glm::mat4 model = glm::mat4(1.0f);
             glm::vec3 translate = glm::vec3(1.0f);

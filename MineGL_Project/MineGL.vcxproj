@@ -24,6 +24,7 @@
     <ClInclude Include="chunk.h" />
     <ClInclude Include="chunkMap.h" />
     <ClInclude Include="controller.h" />
+    <ClInclude Include="coorPack.h" />
     <ClInclude Include="debugging.h" />
     <ClInclude Include="drawable.h" />
     <ClInclude Include="frustrum.h" />
@@ -43,6 +44,7 @@
     <ClCompile Include="chunk.cpp" />
     <ClCompile Include="chunkMap.cpp" />
     <ClCompile Include="controller.cpp" />
+    <ClCompile Include="coorPack.cpp" />
     <ClCompile Include="debugging.cpp" />
     <ClCompile Include="drawable.cpp" />
     <ClCompile Include="glad.c" />

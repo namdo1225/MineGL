@@ -66,6 +66,9 @@
     <ClInclude Include="greedyChunk.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="coorPack.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="texture.cpp">
@@ -117,6 +120,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="greedyChunk.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="coorPack.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

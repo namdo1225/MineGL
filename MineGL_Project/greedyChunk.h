@@ -9,6 +9,7 @@
 #include "stb_image.h"
 #include "characters.h"
 #include "chunk.h"
+#include "coorPack.h"
 
 class GreedyChunk {
 private:
