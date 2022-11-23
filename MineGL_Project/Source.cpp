@@ -42,7 +42,7 @@ int main() {
     
     };
 
-    Controller controller = Controller("MineGL", 800, 600);
+    Controller controller = Controller("MineGL", 1200, 800);
     //controller.appendDrawable(new SimpleTri);
     //controller.constructDrawable(0, vertices);
     //controller.setTexture("container.jpg", 0);

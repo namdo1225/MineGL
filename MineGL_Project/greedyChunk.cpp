@@ -81,16 +81,6 @@ void GreedyChunk::setNoise() {
         std::chrono::steady_clock::now().time_since_epoch().count()
         ) };
 
-    // Print a bunch of random numbers
-    for (int count{ 1 }; count <= 40; ++count)
-    {
-        std::cout << mt() << '\t'; // generate a random number
-
-        // If we've printed 5 numbers, start a new row
-        if (count % 5 == 0)
-            std::cout << '\n';
-    }
-
     noise.SetSeed(mt());
     noise.SetFrequency(0.001);
     noise.SetFractalType(FastNoiseLite::FractalType::FractalType_Ridged);
@@ -212,13 +202,14 @@ void GreedyChunk::greedyAlgorithm() {
     faces[11].clear();
     std::vector<CoorPack> coords;
     for (unsigned int k{ 0 }; k < sizeY; k++) { //y
-        coords.clear();
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::vec3 translate = glm::vec3(1.0f);
+        bool first = true;
+        int scaleZ = 1;
+        int scaleY = 1;
 
         for (unsigned int j{ 0 }; j < sizeX; j++) { //x
-            glm::mat4 model = glm::mat4(1.0f);
-            glm::vec3 translate = glm::vec3(1.0f);
-            bool first = true;
-            int scaleFactor = 1; 
+ 
 
             for (unsigned int i{ 0 }; i < sizeZ; i++) { //z
                 if (block[i][j][k] == GRASS) {
@@ -229,41 +220,49 @@ void GreedyChunk::greedyAlgorithm() {
                         first = false;
 
                         if (i + 1 == sizeZ) {
+                            coords.push_back(CoorPack(j, k, i, 0, 0, scaleZ));
+
                             model = glm::translate(model, translate);
                             faces[11].push_back(model);
 
                             model = glm::mat4(1.0f);
                             translate = glm::vec3(1.0f);
                             first = true;
-                            scaleFactor = 1;
+                            scaleZ = 1;
                         }
                     }
                     else if (i + 1 == sizeZ) {
-                        scaleFactor += 1.0f;
+                        scaleZ += 1.0f;
                         model = glm::translate(model, translate);
-                        model = glm::scale(model, glm::vec3(1.0f, 1.0f, scaleFactor));
-                        model = glm::translate(model, glm::vec3(0.f, 0.f, translateFactor[scaleFactor]));
+                        model = glm::scale(model, glm::vec3(1.0f, 1.0f, scaleZ));
+                        model = glm::translate(model, glm::vec3(0.f, 0.f, translateFactor[scaleZ]));
                         faces[11].push_back(model);
+
+                        coords.push_back(CoorPack(j, k, i, 0, 0, scaleZ));
+
 
                         model = glm::mat4(1.0f);
                         translate = glm::vec3(1.0f);
                         first = true;
-                        scaleFactor = 1;
+                        scaleZ = 1;
                     } else
-                        scaleFactor += 1;
+                        scaleZ += 1;
                 }
 
                 // if the current block is not grass and the previous block is grass
                 else if (block[i][j][k] != GRASS and !first) {
                     model = glm::translate(model, translate);
-                    model = glm::scale(model, glm::vec3(1.0f, 1.0f, scaleFactor));
-                    model = glm::translate(model, glm::vec3(0.f, 0.f, translateFactor[scaleFactor]));
+                    model = glm::scale(model, glm::vec3(1.0f, 1.0f, scaleZ));
+                    model = glm::translate(model, glm::vec3(0.f, 0.f, translateFactor[scaleZ]));
                     faces[11].push_back(model);
+
+                    coords.push_back(CoorPack(j, k, i, 0, 0, scaleZ));
+
 
                     model = glm::mat4(1.0f);
                     translate = glm::vec3(1.0f);
                     first = true;
-                    scaleFactor = 1;
+                    scaleZ = 1;
                 }
             }
         }

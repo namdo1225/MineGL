@@ -64,7 +64,7 @@ float Controller::vertices[] = {
      // Right face
      0.3f,  0.3f,  0.3f, -0.36f, 0.0f,  0.0f,  0.0f, 0.0f, // 12
      0.3f, -0.3f, -0.3f, -0.36f, 0.0f,  0.0f,  1.0f, 1.0f, // 13
-     0.3f, -0.3f,  0.3f, -0.36f, 0.0f,  0.0f,  0.0f, 1.0f, // 14     
+     0.3f, -0.3f,  0.3f, -0.36f, 0.0f,  0.0f,  0.0f, 1.0f, // 14
      0.3f,  0.3f, -0.3f, -0.36f, 0.0f,  0.0f,  1.0f, 0.0f, // 15
 
     // Bottom face
@@ -117,6 +117,7 @@ void Controller::begin(const char* title, int w, int h) {
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
@@ -147,9 +148,10 @@ void Controller::begin(const char* title, int w, int h) {
     }
 
     this->setupOGL();
+    this->createMenu();
 
     this->cubeShader = ResourceManager::LoadShader("shader/2.5_instancing_mat4_vs.txt", "shader/2.5_instancing_mat4_fs.txt", nullptr, "cubeShader");
-    this->textShader = ResourceManager::LoadShader("shader/1.2_text_vs.txt", "shader/1.2_text_fs.txt", nullptr, "textShader");
+    //this->textShader = ResourceManager::LoadShader("shader/1.2_text_vs.txt", "shader/1.2_text_fs.txt", nullptr, "textShader");
     this->textures.push_back(ResourceManager::LoadTexture("texture/dirt_resize.jpg", true, "dirt"));
     this->textures.push_back(ResourceManager::LoadTexture("texture/grass_resize.jpg", true, "grass"));
     this->textures.push_back(ResourceManager::LoadTexture("texture/grass_dirt_resize.jpg", true, "grassDirt"));
@@ -167,6 +169,8 @@ void Controller::loop() {
 
     projection = glm::perspective(glm::radians(camera.Zoom), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
     cubeShader.SetMatrix4("projection", projection);
+
+    texts[0]->construct("Reset Pos", 0, 780, 0.5, glm::vec3(1, 1, 1), 1200, 800);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -198,8 +202,8 @@ void Controller::loop() {
         // ------
         glClearColor(0.1f, 0.4f, 0.6f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        draw();
+        drawCube();
+        texts[0]->draw(Characters);
 
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -296,22 +300,43 @@ void Controller::mouse_callback(GLFWwindow* window, double xposIn, double yposIn
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
 
-    if (firstMouse)
-    {
+    if (!glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+
+        if (firstMouse)
+        {
+            lastX = xpos;
+            lastY = ypos;
+            firstMouse = false;
+        }
+
+        float xoffset = xpos - lastX;
+        float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
         lastX = xpos;
         lastY = ypos;
-        firstMouse = false;
+
+        camera.ProcessMouseMovement(xoffset, yoffset);
+
+        lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
+    }
+    else if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+void Controller::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+
+    if (!glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
+        return;
+
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        if (xpos > 0 and xpos < 100 and ypos > 0 and ypos < 100)
+            camera.teleport(0.f, 125.f, 0.f);
     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-    lastX = xpos;
-    lastY = ypos;
-
-    camera.ProcessMouseMovement(xoffset, yoffset);
-
-    lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
@@ -335,8 +360,6 @@ void Controller::processInput(GLFWwindow* window) {
         wireFrameMode = false;
     }
 
-
-
     float speed = 1.0f;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT))
         speed = 10.0f;
@@ -354,56 +377,7 @@ void Controller::processInput(GLFWwindow* window) {
             player.updatePlayerPos(camera.ProcessKeyboard(LEFT, deltaTime * speed));
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             player.updatePlayerPos(camera.ProcessKeyboard(RIGHT, deltaTime * speed));
-
-        //std::cout << player.getPlayerChunk('x') << " " << player.getPlayerChunk('z') << "\n";
-        std::cout << testNumber << "\n";
     }
-
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
-        faces[0][1] = glm::translate(faces[0][1], glm::vec3(.0f, .0, .001f));
-        faces[1][1] = glm::translate(faces[1][1], glm::vec3(.0f, .0, .001f));
-        faces[2][1] = glm::translate(faces[2][1], glm::vec3(.0f, .0, .001f));
-        faces[3][1] = glm::translate(faces[3][1], glm::vec3(.0f, .0, .001f));
-        faces[4][1] = glm::translate(faces[4][1], glm::vec3(.0f, .0, .001f));
-        faces[5][1] = glm::translate(faces[5][1], glm::vec3(.0f, .0, .001f));
-
-        testNumber += .001f;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
-        faces[0][1] = glm::translate(faces[0][1], glm::vec3(.0f, .0, -.001f));
-        faces[1][1] = glm::translate(faces[1][1], glm::vec3(.0f, .0, -.001f));
-        faces[2][1] = glm::translate(faces[2][1], glm::vec3(.0f, .0, -.001f));
-        faces[3][1] = glm::translate(faces[3][1], glm::vec3(.0f, .0, -.001f));
-        faces[4][1] = glm::translate(faces[4][1], glm::vec3(.0f, .0, -.001f));
-        faces[5][1] = glm::translate(faces[5][1], glm::vec3(.0f, .0, -.001f));
-        
-        testNumber -= 0.001f;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS) {
-        faces[0][1] = glm::translate(faces[0][1], glm::vec3(.0f, .0, .15f));
-        faces[1][1] = glm::translate(faces[1][1], glm::vec3(.0f, .0, .15f));
-        faces[2][1] = glm::translate(faces[2][1], glm::vec3(.0f, .0, .15f));
-        faces[3][1] = glm::translate(faces[3][1], glm::vec3(.0f, .0, .15f));
-        faces[4][1] = glm::translate(faces[4][1], glm::vec3(.0f, .0, .15f));
-        faces[5][1] = glm::translate(faces[5][1], glm::vec3(.0f, .0, .15f));
-        
-        testNumber += 0.15f;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
-        faces[0][1] = glm::translate(faces[0][1], glm::vec3(.0f, .0, -.15f));
-        faces[1][1] = glm::translate(faces[1][1], glm::vec3(.0f, .0, -.15f));
-        faces[2][1] = glm::translate(faces[2][1], glm::vec3(.0f, .0, -.15f));
-        faces[3][1] = glm::translate(faces[3][1], glm::vec3(.0f, .0, -.15f));
-        faces[4][1] = glm::translate(faces[4][1], glm::vec3(.0f, .0, -.15f));
-        faces[5][1] = glm::translate(faces[5][1], glm::vec3(.0f, .0, -.15f));
-        
-        testNumber -= 0.15f;
-    }
-
-
 }
 
 void Controller::createCube() {
@@ -411,6 +385,44 @@ void Controller::createCube() {
     glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &cubeVBO);
     glGenBuffers(1, &cubeEBO);
+
+    map.setUp();
+}
+
+float Controller::recursiveTranslate(float scaleFactor) {
+    if (scaleFactor == 1.0f)
+        return 0.0f;
+    else if (scaleFactor == 2.0f)
+        return 0.15f;
+
+    return 0.05 / scaleFactor + recursiveTranslate(scaleFactor);
+}
+
+unsigned int Controller::indices[][6] = {
+    {0,  1,  2,  1,  0,  3 },
+    {4,  5,  6,  6,  7,  4 },
+    {8,  9, 10, 10, 11,  8 },
+    {12, 15, 13, 13, 14, 12},
+    {17, 19, 16, 16, 18, 17},
+    {21, 20, 23, 20, 21, 22}
+};
+
+std::vector<std::vector<glm::mat4>> Controller::faces;
+
+void Controller::drawCube() {
+    view = camera.GetViewMatrix();
+
+    // pass transformation matrices to the shader
+    cubeShader.Use();
+    cubeShader.SetMatrix4("view", view);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 2.0f));
+    cubeShader.SetMatrix4("model", model);
+
+
+    glBindVertexArray(cubeVAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
 
     glBindBuffer(GL_ARRAY_BUFFER, instanceCubeVBO);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -421,10 +433,10 @@ void Controller::createCube() {
     glBufferData(GL_ARRAY_BUFFER, 8 * 4 * 6 * 6, vertices, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
 
-     // position attribute
+    // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    
+
     // vertex normal attribute
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
@@ -451,43 +463,8 @@ void Controller::createCube() {
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
 
-    map.setUp();
-}
-
-float Controller::recursiveTranslate(float scaleFactor) {
-    if (scaleFactor == 1.0f)
-        return 0.0f;
-    else if (scaleFactor == 2.0f)
-        return 0.15f;
-
-    return 0.05 / scaleFactor + recursiveTranslate(scaleFactor);
-}
-
-unsigned int Controller::indices[][6] = {
-    {0,  1,  2,  1,  0,  3 },
-    {4,  5,  6,  6,  7,  4 },
-    {8,  9, 10, 10, 11,  8 },
-    {12, 15, 13, 13, 14, 12},
-    {17, 19, 16, 16, 18, 17},
-    {21, 20, 23, 20, 21, 22}
-};
-
-std::vector<std::vector<glm::mat4>> Controller::faces;
-
-void Controller::draw() {
-    view = camera.GetViewMatrix();
-
-    // pass transformation matrices to the shader
-    cubeShader.Use();
-    cubeShader.SetMatrix4("view", view);
-
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 2.0f));
-    cubeShader.SetMatrix4("model", model);
 
 
-    glBindVertexArray(cubeVAO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
     map.draw(player, textures);
 
     /*
@@ -515,4 +492,9 @@ void Controller::draw() {
     }*/
 
     glBindVertexArray(0);
+}
+
+void Controller::createMenu() {
+    texts.push_back(new Text());
+    texts[0]->loadShader();
 }

@@ -90,6 +90,10 @@ void ChunkMap::add(int x, int z) {
 void ChunkMap::setUp() {
     GreedyChunk::setNoise();
 
+    /// <summary>
+    /// 
+    /// FIX IT SO IT GENERATES 10 x 10 CHUNK
+    /// </summary>
     for (int i{ -10 }; i < 10; i++) // x
         for (int j{ -10 }; j < 10; j++) { // z 
             add(i, j);

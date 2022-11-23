@@ -8,18 +8,20 @@
 
 class Text {
 public:
-    Shader drawShader;
+    static Shader drawShader;
 
     Text();
 
     void construct(std::string text, float x, float y, float scale, glm::vec3 color, float resX, float resY);
-    void deconstruct();
+    static void deconstruct();
     void draw(std::map<GLchar, Character> &Characters);
 
     void changeView(const glm::mat4 mat);
 
+    void loadShader();
+
 private:
-    unsigned int VBO, VAO;
+    static unsigned int VBO, VAO;
 
     std::string textT;
     float xT, yT, scaleT; 
@@ -33,6 +35,8 @@ private:
     float xB, yB, scaleB;
 
     glm::vec3 colorB;
+
+    float vertices[6][4];
 
 };
 

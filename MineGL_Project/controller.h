@@ -27,7 +27,7 @@ public:
 
 	static void createCube();
 
-	static void draw();
+	static void drawCube();
 
 protected:
 
@@ -82,8 +82,10 @@ private:
 
 	static bool wireFrameMode;
 
+
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	static void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
+	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 	static void processInput(GLFWwindow* window);
 
@@ -95,6 +97,7 @@ private:
 
 	static float recursiveTranslate(float scaleFactor);
 
+	void createMenu();
 };
 
 #endif
