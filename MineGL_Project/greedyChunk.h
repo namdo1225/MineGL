@@ -61,7 +61,6 @@ public:
 
 	void prepareRegenerationEdge(Block*** block0, Block*** block1, Block*** block2, Block*** block3);
 
-
 	// test
 	void greedyAlgorithm();
 

@@ -4,6 +4,7 @@ GLFWwindow* Controller::window;
 
 int Controller::screenWidth;
 int Controller::screenHeight;
+int Controller::flags;
 
 float Controller::lastX = 400.f;
 float Controller::lastY = 600 / 2.0f;
@@ -15,16 +16,13 @@ float Controller::lastFrame = 0.0f;
 Camera Controller::camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
 glm::vec3 Controller::lightPos = glm::vec3(0.f, 0.f, 0.f);
 
-FT_Library Controller::ft;
-FT_Face Controller::face;
-
 std::map<GLchar, Character> Controller::Characters;
 
 Shader Controller::cubeShader;
 
-Shader Controller::textShader;
-
 std::vector<unsigned int> Controller::cubeVBOs;
+std::vector<Drawable*> Controller::all;
+std::vector<Text*> Controller::texts;
 
 unsigned int Controller::cubeVAO;
 unsigned int Controller::cubeVBO;
@@ -88,6 +86,7 @@ float Controller::testNumber = 0.0f;
 
 Controller::Controller(const char* title, int w, int h) {
     begin(title, w, h);
+    createCube();
 }
 
 Controller::~Controller() {}
@@ -147,17 +146,17 @@ void Controller::begin(const char* title, int w, int h) {
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
 
-    this->setupOGL();
-    this->createMenu();
+    createMenu();
 
-    this->cubeShader = ResourceManager::LoadShader("shader/2.5_instancing_mat4_vs.txt", "shader/2.5_instancing_mat4_fs.txt", nullptr, "cubeShader");
+
+    cubeShader = ResourceManager::LoadShader("shader/2.5_instancing_mat4_vs.txt", "shader/2.5_instancing_mat4_fs.txt", nullptr, "cubeShader");
     //this->textShader = ResourceManager::LoadShader("shader/1.2_text_vs.txt", "shader/1.2_text_fs.txt", nullptr, "textShader");
-    this->textures.push_back(ResourceManager::LoadTexture("texture/dirt_resize.jpg", true, "dirt"));
-    this->textures.push_back(ResourceManager::LoadTexture("texture/grass_resize.jpg", true, "grass"));
-    this->textures.push_back(ResourceManager::LoadTexture("texture/grass_dirt_resize.jpg", true, "grassDirt"));
-    this->textures.push_back(ResourceManager::LoadTexture("texture/stone.jpg", true, "stone"));
+    textures.push_back(ResourceManager::LoadTexture("texture/dirt_resize.jpg", true, "dirt"));
+    textures.push_back(ResourceManager::LoadTexture("texture/grass_resize.jpg", true, "grass"));
+    textures.push_back(ResourceManager::LoadTexture("texture/grass_dirt_resize.jpg", true, "grassDirt"));
+    textures.push_back(ResourceManager::LoadTexture("texture/stone.jpg", true, "stone"));
     
-    this->cubeShader.SetInteger("textureMain", 0, true);
+    cubeShader.SetInteger("textureMain", 0, true);
 
 }
 
@@ -169,8 +168,6 @@ void Controller::loop() {
 
     projection = glm::perspective(glm::radians(camera.Zoom), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
     cubeShader.SetMatrix4("projection", projection);
-
-    texts[0]->construct("Reset Pos", 0, 780, 0.5, glm::vec3(1, 1, 1), 1200, 800);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -203,8 +200,7 @@ void Controller::loop() {
         glClearColor(0.1f, 0.4f, 0.6f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         drawCube();
-        texts[0]->draw(Characters);
-
+        drawMenu();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -226,66 +222,6 @@ void Controller::end() {
     map.cleanChunks();
 
     glfwTerminate();
-}
-
-void Controller::setupOGL() {
-    if (FT_Init_FreeType(&ft)) {
-        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-    }
-
-    if (FT_New_Face(ft, "font/arial.ttf", 0, &face)) {
-        std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-    }
-    else {
-        // set size to load glyphs as
-        FT_Set_Pixel_Sizes(face, 0, 48);
-
-        // disable byte-alignment restriction
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-        // load first 128 characters of ASCII set
-        for (unsigned char c = 0; c < 128; c++)
-        {
-            // Load character glyph 
-            if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-            {
-                std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-                continue;
-            }
-            // generate texture
-            unsigned int texture;
-            glGenTextures(1, &texture);
-            glBindTexture(GL_TEXTURE_2D, texture);
-            glTexImage2D(
-                GL_TEXTURE_2D,
-                0,
-                GL_RED,
-                face->glyph->bitmap.width,
-                face->glyph->bitmap.rows,
-                0,
-                GL_RED,
-                GL_UNSIGNED_BYTE,
-                face->glyph->bitmap.buffer
-            );
-            // set texture options
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            // now store character for later use
-            Character character = {
-                texture,
-                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                static_cast<unsigned int>(face->glyph->advance.x)
-            };
-            Characters.insert(std::pair<char, Character>(c, character));
-        }
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-    // destroy FreeType once we're finished
-    FT_Done_Face(face);
-    FT_Done_FreeType(ft);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -335,6 +271,16 @@ void Controller::mouse_button_callback(GLFWwindow* window, int button, int actio
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         if (xpos > 0 and xpos < 100 and ypos > 0 and ypos < 100)
             camera.teleport(0.f, 125.f, 0.f);
+        else if (xpos > 200 and xpos < 320 and ypos > 0 and ypos < 100) {
+            if (!wireFrameMode) {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                wireFrameMode = true;
+            }
+            else {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                wireFrameMode = false;
+            }
+        }
     }
 
 }
@@ -350,15 +296,6 @@ void Controller::scroll_callback(GLFWwindow* window, double xoffset, double yoff
 void Controller::processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS and !wireFrameMode) {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        wireFrameMode = true;
-    }
-    else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS and wireFrameMode) {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        wireFrameMode = false;
-    }
 
     float speed = 1.0f;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT))
@@ -463,38 +400,27 @@ void Controller::drawCube() {
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
 
-
-
     map.draw(player, textures);
-
-    /*
-    for (unsigned int i{ 0 }; i < faces.size(); i++) {
-        if (faces[i].size() == 0)
-            continue;
-
-
-        if (i == 11) {
-            textures[1].Bind();
-        }
-        else if (i >= 6 and i <= 9) {
-            textures[2].Bind();
-        }
-        else if (i >= 12) {
-            textures[3].Bind();
-        }
-        else {
-            textures[0].Bind();
-        }
-
-        glBufferData(GL_ARRAY_BUFFER, faces[i].size() * sizeof(glm::mat4), &faces[i][0], GL_STATIC_DRAW);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), &indices[i % 6][0], GL_STATIC_DRAW);
-        glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, faces[i].size());
-    }*/
 
     glBindVertexArray(0);
 }
 
 void Controller::createMenu() {
     texts.push_back(new Text());
+    texts[0]->setupOGL();
     texts[0]->loadShader();
+
+    texts[0]->construct("Reset Pos", 0, 780, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+
+    texts.push_back(new Text());
+    texts[1]->construct("Chunk", 120, 780, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+
+    texts.push_back(new Text());
+    texts[2]->construct("Wireframe", 200, 780, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+}
+
+void Controller::drawMenu() {
+    texts[0]->draw();
+    texts[1]->draw();
+    texts[2]->draw();
 }

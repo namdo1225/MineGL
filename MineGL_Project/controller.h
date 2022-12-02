@@ -19,15 +19,9 @@ public:
 	Controller(const char* title, int w, int h);
 	~Controller();
 
-	void begin(const char* title, int w, int h);
-	void loop();
-	void end();
-
-	static void setupOGL();
-
-	static void createCube();
-
-	static void drawCube();
+	static void begin(const char* title, int w, int h);
+	static void loop();
+	static void end();
 
 protected:
 
@@ -48,20 +42,16 @@ private:
 	static glm::vec3 lightPos;
 
 	static int screenWidth, screenHeight;
-	int flags;
+	static int flags;
 
-	std::vector<Drawable*> all;
-	std::vector<Text*> texts;
+	static std::vector<Drawable*> all;
+	static std::vector<Text*> texts;
 	static std::vector<unsigned int> cubeVBOs;
-
-	static FT_Library ft;
-	static FT_Face face;
 
 	static std::vector<Texture2D> textures;
 	static std::map<GLchar, Character> Characters;
 
 	static Shader cubeShader;
-	static Shader textShader;
 
 	static unsigned int cubeVAO;
 	static unsigned int cubeVBO;
@@ -97,7 +87,11 @@ private:
 
 	static float recursiveTranslate(float scaleFactor);
 
-	void createMenu();
+	static void createCube();
+	static void createMenu();
+
+	static void drawCube();
+	static void drawMenu();
 };
 
 #endif
