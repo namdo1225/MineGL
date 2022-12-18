@@ -23,6 +23,7 @@
     <ClInclude Include="characters.h" />
     <ClInclude Include="chunk.h" />
     <ClInclude Include="chunkMap.h" />
+    <ClInclude Include="chunkMark.h" />
     <ClInclude Include="controller.h" />
     <ClInclude Include="coorPack.h" />
     <ClInclude Include="debugging.h" />
@@ -43,6 +44,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="chunk.cpp" />
     <ClCompile Include="chunkMap.cpp" />
+    <ClCompile Include="chunkMark.cpp" />
     <ClCompile Include="controller.cpp" />
     <ClCompile Include="coorPack.cpp" />
     <ClCompile Include="debugging.cpp" />
@@ -77,6 +79,8 @@
     <Text Include="shader\2.4_instancing_vec3_vs.txt" />
     <Text Include="shader\2.5_instancing_mat4_fs.txt" />
     <Text Include="shader\2.5_instancing_mat4_vs.txt" />
+    <Text Include="shader\2.6_instancing_chunkmap_vec3_fs.txt" />
+    <Text Include="shader\2.6_instancing_chunkmap_vec3_vs.txt" />
     <Text Include="shader\fragmentLightning.txt" />
     <Text Include="shader\fragmentSource.txt" />
     <Text Include="shader\vertexLightning.txt" />
@@ -94,26 +98,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>

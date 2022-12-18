@@ -84,6 +84,10 @@ bool Controller::wireFrameMode{ false };
 
 float Controller::testNumber = 0.0f;
 
+bool Controller::chunkMark{ false };
+
+ChunkMark Controller::mark;
+
 Controller::Controller(const char* title, int w, int h) {
     begin(title, w, h);
     createCube();
@@ -146,8 +150,8 @@ void Controller::begin(const char* title, int w, int h) {
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
 
+    createChunkMark();
     createMenu();
-
 
     cubeShader = ResourceManager::LoadShader("shader/2.5_instancing_mat4_vs.txt", "shader/2.5_instancing_mat4_fs.txt", nullptr, "cubeShader");
     //this->textShader = ResourceManager::LoadShader("shader/1.2_text_vs.txt", "shader/1.2_text_fs.txt", nullptr, "textShader");
@@ -168,6 +172,7 @@ void Controller::loop() {
 
     projection = glm::perspective(glm::radians(camera.Zoom), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
     cubeShader.SetMatrix4("projection", projection);
+    mark.setProjection(projection);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -200,6 +205,7 @@ void Controller::loop() {
         glClearColor(0.1f, 0.4f, 0.6f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         drawCube();
+        drawChunkMark();
         drawMenu();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -271,6 +277,10 @@ void Controller::mouse_button_callback(GLFWwindow* window, int button, int actio
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         if (xpos > 0 and xpos < 100 and ypos > 0 and ypos < 100)
             camera.teleport(0.f, 125.f, 0.f);
+        else if (xpos > 120 and xpos < 180 and ypos > 0 and ypos < 100) {
+            chunkMark = !chunkMark          ;
+            std::cout << chunkMark << "\n";
+        }
         else if (xpos > 200 and xpos < 320 and ypos > 0 and ypos < 100) {
             if (!wireFrameMode) {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -289,6 +299,7 @@ void Controller::mouse_button_callback(GLFWwindow* window, int button, int actio
 void Controller::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     projection = glm::perspective(glm::radians(camera.Zoom), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
     cubeShader.SetMatrix4("projection", projection);
+    mark.setProjection(projection);
 
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
@@ -314,6 +325,16 @@ void Controller::processInput(GLFWwindow* window) {
             player.updatePlayerPos(camera.ProcessKeyboard(LEFT, deltaTime * speed));
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             player.updatePlayerPos(camera.ProcessKeyboard(RIGHT, deltaTime * speed));
+
+        texts[6]->changeText(std::to_string(player.getPlayerChunk('x')) + "/" + std::to_string(player.getPlayerChunk('z')));
+
+        texts[7]->changeText(std::to_string(abs(player.getPlayerPos().x - (player.getPlayerChunk('x') * 9.6))) + "/"
+            + std::to_string(abs(player.getPlayerPos().y / 9.6 - (player.getPlayerChunk('y') * 9.6))) + "/"
+            + std::to_string(abs(player.getPlayerPos().z / 9.6 - (player.getPlayerChunk('z') * 9.6))));
+
+        texts[8]->changeText(std::to_string(player.getPlayerPos().x) + "/"
+            + std::to_string(player.getPlayerPos().y) + "/"
+            + std::to_string(player.getPlayerPos().z));
     }
 }
 
@@ -350,13 +371,9 @@ void Controller::drawCube() {
     view = camera.GetViewMatrix();
 
     // pass transformation matrices to the shader
+    mark.setView(view);
     cubeShader.Use();
     cubeShader.SetMatrix4("view", view);
-
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 2.0f));
-    cubeShader.SetMatrix4("model", model);
-
 
     glBindVertexArray(cubeVAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
@@ -417,10 +434,48 @@ void Controller::createMenu() {
 
     texts.push_back(new Text());
     texts[2]->construct("Wireframe", 200, 780, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+
+    texts.push_back(new Text());
+    texts[3]->construct("Chunk X/Z:", 0, 20, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+
+    texts.push_back(new Text());
+    texts[4]->construct("Relative X/Y/Z:", 0, 40, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+
+    texts.push_back(new Text());
+    texts[5]->construct("Absolute X/Y/Z:", 0, 60, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+
+    texts.push_back(new Text());
+    texts[6]->construct("", 180, 20, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+
+    texts.push_back(new Text());
+    texts[7]->construct("", 180, 40, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+
+    texts.push_back(new Text());
+    texts[8]->construct("", 180, 60, 0.5, glm::vec3(1, 1, 1), 1200, 800);
 }
 
 void Controller::drawMenu() {
     texts[0]->draw();
     texts[1]->draw();
     texts[2]->draw();
+
+    texts[3]->draw();
+    texts[4]->draw();
+    texts[5]->draw();
+
+    texts[6]->draw();
+    texts[7]->draw();
+    texts[8]->draw();
+}
+
+void Controller::createChunkMark() {
+    mark = ChunkMark();
+    mark.construct();
+}
+
+void Controller::drawChunkMark() {
+    if (!chunkMark)
+        return;
+
+    mark.draw(player, camera);
 }

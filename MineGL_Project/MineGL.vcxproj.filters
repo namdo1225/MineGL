@@ -69,6 +69,9 @@
     <ClInclude Include="coorPack.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="chunkMark.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="texture.cpp">
@@ -123,6 +126,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="coorPack.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="chunkMark.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -188,6 +194,12 @@
       <Filter>Shader</Filter>
     </Text>
     <Text Include="shader\2.5_instancing_mat4_fs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\2.6_instancing_chunkmap_vec3_fs.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="shader\2.6_instancing_chunkmap_vec3_vs.txt">
       <Filter>Shader</Filter>
     </Text>
   </ItemGroup>

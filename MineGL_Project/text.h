@@ -22,6 +22,8 @@ public:
 
     static void setupOGL();
 
+    void changeText(std::string text);
+
 private:
     static unsigned int VBO, VAO;
     static std::map<GLchar, Character> Characters;
@@ -29,7 +31,7 @@ private:
     static FT_Face face;
 
     std::string textT;
-    float xT, yT, scaleT; 
+    float xT, yT, scaleT;
     float xB;
 
     glm::vec3 colorT;

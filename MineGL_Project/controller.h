@@ -13,6 +13,7 @@
 #include "chunkMap.h"
 #include "player.h"
 #include "greedyChunk.h"
+#include "chunkMark.h"
 
 class Controller {
 public:
@@ -89,9 +90,14 @@ private:
 
 	static void createCube();
 	static void createMenu();
+	static void createChunkMark();
 
 	static void drawCube();
 	static void drawMenu();
+	static void drawChunkMark();
+
+	static bool chunkMark;
+	static ChunkMark mark;
 };
 
 #endif

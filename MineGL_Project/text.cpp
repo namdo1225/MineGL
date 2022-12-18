@@ -158,3 +158,7 @@ void Text::setupOGL() {
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 }
+
+void Text::changeText(std::string text) {
+    textT = text;
+}
