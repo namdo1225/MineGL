@@ -80,11 +80,10 @@ float Controller::vertices[] = {
 
 Player Controller::player;
 
-bool Controller::wireFrameMode{ false };
+bool Controller::wireFrameMode{ false }, Controller::cullMode{ true }, Controller::chunkMark{ false },
+Controller::hideCommands{ false };
 
 float Controller::testNumber = 0.0f;
-
-bool Controller::chunkMark{ false };
 
 ChunkMark Controller::mark;
 
@@ -275,11 +274,17 @@ void Controller::mouse_button_callback(GLFWwindow* window, int button, int actio
         return;
 
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        if (xpos > 0 and xpos < 100 and ypos > 0 and ypos < 100)
+        if (xpos > 1150 && xpos < 1200 && ypos > 0 && ypos < 100) {
+            hideCommands = !hideCommands;
+        }
+
+        if (hideCommands)
+            return;
+
+        if (xpos > 0 && xpos < 100 && ypos > 0 && ypos < 100)
             camera.teleport(0.f, 125.f, 0.f);
-        else if (xpos > 120 and xpos < 180 and ypos > 0 and ypos < 100) {
+        else if (xpos > 120 && xpos < 180 && ypos > 0 && ypos < 100) {
             chunkMark = !chunkMark          ;
-            std::cout << chunkMark << "\n";
         }
         else if (xpos > 200 and xpos < 320 and ypos > 0 and ypos < 100) {
             if (!wireFrameMode) {
@@ -289,6 +294,16 @@ void Controller::mouse_button_callback(GLFWwindow* window, int button, int actio
             else {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 wireFrameMode = false;
+            }
+        }
+        else if (xpos > 340 && xpos < 380 && ypos > 0 && ypos < 100) {
+            if (!cullMode) {
+                glEnable(GL_CULL_FACE);
+                cullMode = true;
+            }
+            else {
+                glDisable(GL_CULL_FACE);
+                cullMode = false;
             }
         }
     }
@@ -329,7 +344,6 @@ void Controller::processInput(GLFWwindow* window) {
         texts[6]->changeText(std::to_string(player.getPlayerChunk('x')) + "/" + std::to_string(player.getPlayerChunk('z')));
 
         texts[7]->changeText(std::to_string(abs(player.getPlayerPos().x - (player.getPlayerChunk('x') * 9.6))) + "/"
-            + std::to_string(abs(player.getPlayerPos().y / 9.6 - (player.getPlayerChunk('y') * 9.6))) + "/"
             + std::to_string(abs(player.getPlayerPos().z / 9.6 - (player.getPlayerChunk('z') * 9.6))));
 
         texts[8]->changeText(std::to_string(player.getPlayerPos().x) + "/"
@@ -427,34 +441,45 @@ void Controller::createMenu() {
     texts[0]->setupOGL();
     texts[0]->loadShader();
 
-    texts[0]->construct("Reset Pos", 0, 780, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+    texts[0]->construct("Reset Pos", 0, 780, 0.5, glm::vec4(1, 1, 1, 0.5), 1200, 800);
 
     texts.push_back(new Text());
-    texts[1]->construct("Chunk", 120, 780, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+    texts[1]->construct("Chunk", 120, 780, 0.5, glm::vec4(1, 1, 1, 0.5), 1200, 800);
 
     texts.push_back(new Text());
-    texts[2]->construct("Wireframe", 200, 780, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+    texts[2]->construct("Wireframe", 200, 780, 0.5, glm::vec4(1, 1, 1, 0.5), 1200, 800);
 
     texts.push_back(new Text());
-    texts[3]->construct("Chunk X/Z:", 0, 20, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+    texts[3]->construct("Chunk X/Z:", 0, 20, 0.5, glm::vec4(1, 1, 1, 0.5), 1200, 800);
 
     texts.push_back(new Text());
-    texts[4]->construct("Relative X/Y/Z:", 0, 40, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+    texts[4]->construct("Relative X/Z:", 0, 40, 0.5, glm::vec4(1, 1, 1, 0.5), 1200, 800);
 
     texts.push_back(new Text());
-    texts[5]->construct("Absolute X/Y/Z:", 0, 60, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+    texts[5]->construct("Absolute X/Y/Z:", 0, 60, 0.5, glm::vec4(1, 1, 1, 0.5), 1200, 800);
 
     texts.push_back(new Text());
-    texts[6]->construct("", 180, 20, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+    texts[6]->construct("", 180, 20, 0.5, glm::vec4(1, 1, 1, 0.5), 1200, 800);
 
     texts.push_back(new Text());
-    texts[7]->construct("", 180, 40, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+    texts[7]->construct("", 180, 40, 0.5, glm::vec4(1, 1, 1, 0.5), 1200, 800);
 
     texts.push_back(new Text());
-    texts[8]->construct("", 180, 60, 0.5, glm::vec3(1, 1, 1), 1200, 800);
+    texts[8]->construct("", 180, 60, 0.5, glm::vec4(1, 1, 1, 0.5), 1200, 800);
+
+    texts.push_back(new Text());
+    texts[9]->construct("Cull", 320, 780, 0.5, glm::vec4(1, 1, 1, 0.5), 1200, 800);
+
+    texts.push_back(new Text());
+    texts[10]->construct("X", 1180, 780, 0.5, glm::vec4(1, 1, 1, 0.5), 1200, 800);
 }
 
 void Controller::drawMenu() {
+    texts[10]->draw();
+
+    if (hideCommands)
+        return;
+
     texts[0]->draw();
     texts[1]->draw();
     texts[2]->draw();
@@ -466,6 +491,8 @@ void Controller::drawMenu() {
     texts[6]->draw();
     texts[7]->draw();
     texts[8]->draw();
+
+    texts[9]->draw();
 }
 
 void Controller::createChunkMark() {

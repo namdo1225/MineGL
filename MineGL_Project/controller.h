@@ -71,9 +71,6 @@ private:
 
 	static Player player;
 
-	static bool wireFrameMode;
-
-
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	static void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
 	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -96,7 +93,7 @@ private:
 	static void drawMenu();
 	static void drawChunkMark();
 
-	static bool chunkMark;
+	static bool chunkMark, cullMode, wireFrameMode, hideCommands;
 	static ChunkMark mark;
 };
 

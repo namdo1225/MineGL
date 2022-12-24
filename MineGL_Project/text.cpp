@@ -11,7 +11,7 @@ Shader Text::drawShader;
 
 Text::Text() {}
 
-void Text::construct(std::string text, float x, float y, float scale, glm::vec3 color, float resX, float resY) {
+void Text::construct(std::string text, float x, float y, float scale, glm::vec4 color, float resX, float resY) {
     projection = glm::ortho(0.0f, resX, 0.0f, resY);
     drawShader.Use();
 
@@ -46,7 +46,7 @@ void Text::draw() {
     drawShader.Use();
     xT = xB;
 
-    glUniform3f(glGetUniformLocation(drawShader.ID, "textColor"), colorT.x, colorT.y, colorT.z);
+    glUniform4f(glGetUniformLocation(drawShader.ID, "textColor"), colorT.x, colorT.y, colorT.z, colorT.a);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
     

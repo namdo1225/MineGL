@@ -12,7 +12,7 @@ public:
 
     Text();
 
-    void construct(std::string text, float x, float y, float scale, glm::vec3 color, float resX, float resY);
+    void construct(std::string text, float x, float y, float scale, glm::vec4 color, float resX, float resY);
     static void deconstruct();
     void draw();
 
@@ -34,7 +34,7 @@ private:
     float xT, yT, scaleT;
     float xB;
 
-    glm::vec3 colorT;
+    glm::vec4 colorT;
     glm::mat4 projection;
 
     glm::mat4 view = glm::mat4(1.0f);
